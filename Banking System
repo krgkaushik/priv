@@ -1,0 +1,183 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+// OOP Concept: Encapsulation - Fields are private and accessed via methods
+class BankAccount {
+    private String accountHolderName;
+    private String accountNumber;
+    private double balance;
+    private String pin;
+    private List<String> transactionHistory;
+
+    // OOP Concept: Constructor
+    public BankAccount(String accountHolderName, String accountNumber, double initialBalance, String pin) {
+        this.accountHolderName = accountHolderName;
+        this.accountNumber = accountNumber;
+        this.balance = initialBalance;
+        this.pin = pin;
+        this.transactionHistory = new ArrayList<>();
+        recordTransaction("++ Initial Deposit: $" + initialBalance + " ++");
+    }
+
+    public boolean verifyPin(String enteredPin) {
+        return this.pin.equals(enteredPin);
+    }
+
+    public void checkBalance() {
+        System.out.println("\n<<========================================>>");
+        System.out.println("++  CURRENT BALANCE: $" + this.balance);
+        System.out.println("<<========================================>>");
+    }
+
+    public void deposit(double amount) {
+        if (amount > 0) {
+            this.balance += amount;
+            recordTransaction("++ Deposited: $" + amount + " ++");
+            System.out.println("\n>> Success! $" + amount + " has been deposited. <<");
+        } else {
+            System.out.println("\n-- Invalid deposit amount! --");
+        }
+    }
+
+    public void withdraw(double amount) {
+        if (amount > 0 && amount <= this.balance) {
+            this.balance -= amount;
+            recordTransaction("-- Withdrawn: $" + amount + " --");
+            System.out.println("\n>> Success! $" + amount + " has been withdrawn. <<");
+        } else if (amount > this.balance) {
+            System.out.println("\n-- INSUFFICIENT FUNDS! --");
+        } else {
+            System.out.println("\n-- Invalid withdrawal amount! --");
+        }
+    }
+
+    public void viewAccountDetails() {
+        System.out.println("\n<<========================================>>");
+        System.out.println("++        ACCOUNT DETAILS                 ++");
+        System.out.println("<<========================================>>");
+        System.out.println(">> Account Holder : " + this.accountHolderName);
+        System.out.println(">> Account Number : " + this.accountNumber);
+        System.out.println(">> Current Status : ACTIVE");
+        System.out.println("<<========================================>>");
+    }
+
+    public void viewTransactionHistory() {
+        System.out.println("\n<<========================================>>");
+        System.out.println("++        TRANSACTION HISTORY             ++");
+        System.out.println("<<========================================>>");
+        if (transactionHistory.isEmpty()) {
+            System.out.println("-- No transactions found --");
+        } else {
+            for (String transaction : transactionHistory) {
+                System.out.println(">> " + transaction);
+            }
+        }
+        System.out.println("<<========================================>>");
+    }
+
+    public void calculateInterest(double rate) {
+        double interest = (this.balance * rate) / 100;
+        System.out.println("\n<<========================================>>");
+        System.out.println("++ Estimated Yearly Interest (" + rate + "%): $" + interest);
+        System.out.println("<<========================================>>");
+    }
+
+    public void changePin(Scanner scanner) {
+        System.out.print("\n>> Enter Current PIN: ");
+        String oldPin = scanner.next();
+        if (verifyPin(oldPin)) {
+            System.out.print(">> Enter New PIN: ");
+            String newPin = scanner.next();
+            this.pin = newPin;
+            System.out.println("\n++ PIN SUCCESSFULLY UPDATED! ++");
+        } else {
+            System.out.println("\n-- INCORRECT CURRENT PIN! --");
+        }
+    }
+
+    // Helper method to keep transaction log updated
+    private void recordTransaction(String details) {
+        transactionHistory.add(details);
+    }
+}
+
+public class BankingSystem {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        
+        // Creating a test account (OOP Concept: Object Instantiation)
+        BankAccount myAccount = new BankAccount("Admin", "2CODE-998877", 5000.00, "1234");
+
+        boolean isRunning = true;
+
+        System.out.println("\n<<========================================>>");
+        System.out.println("++      WELCOME TO 2CODE BANK SECURE      ++");
+        System.out.println("<<========================================>>");
+        
+        System.out.print(">> Enter your PIN to login: ");
+        String loginPin = scanner.next();
+
+        if (!myAccount.verifyPin(loginPin)) {
+            System.out.println("\n-- SECURITY ALERT: INVALID PIN. EXITING. --");
+            System.exit(0);
+        }
+
+        while (isRunning) {
+            System.out.println("\n<<========================================>>");
+            System.out.println("++               MAIN MENU                ++");
+            System.out.println("<<========================================>>");
+            System.out.println(">> 1. Check Balance                       <<");
+            System.out.println(">> 2. Deposit Funds                       <<");
+            System.out.println(">> 3. Withdraw Funds                      <<");
+            System.out.println(">> 4. View Account Details                <<");
+            System.out.println(">> 5. Transaction History                 <<");
+            System.out.println(">> 6. Calculate Savings Interest          <<");
+            System.out.println(">> 7. Change Account PIN                  <<");
+            System.out.println(">> 8. Secure Logout & Exit                <<");
+            System.out.println("++----------------------------------------++");
+            System.out.print(">> Select Option (1-8): ");
+            
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    myAccount.checkBalance();
+                    break;
+                case 2:
+                    System.out.print("\n>> Enter amount to deposit: $");
+                    double depAmount = scanner.nextDouble();
+                    myAccount.deposit(depAmount);
+                    break;
+                case 3:
+                    System.out.print("\n>> Enter amount to withdraw: $");
+                    double withAmount = scanner.nextDouble();
+                    myAccount.withdraw(withAmount);
+                    break;
+                case 4:
+                    myAccount.viewAccountDetails();
+                    break;
+                case 5:
+                    myAccount.viewTransactionHistory();
+                    break;
+                case 6:
+                    System.out.print("\n>> Enter current interest rate (%): ");
+                    double rate = scanner.nextDouble();
+                    myAccount.calculateInterest(rate);
+                    break;
+                case 7:
+                    myAccount.changePin(scanner);
+                    break;
+                case 8:
+                    System.out.println("\n<<========================================>>");
+                    System.out.println("++    LOGGED OUT SUCCESSFULLY. GOODBYE!   ++");
+                    System.out.println("<<========================================>>");
+                    isRunning = false;
+                    break;
+                default:
+                    System.out.println("\n-- INVALID SELECTION. PLEASE TRY AGAIN. --");
+            }
+        }
+        scanner.close();
+    }
+}
